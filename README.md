@@ -151,10 +151,38 @@ en `.gitignore`: siguen en la carpeta del proyecto pero fuera del control de
 versiones, para que un clon pese 4 MB en vez de 78. Si los necesitas para regenerar
 los WebP, pídeselos a quien tenga el arte fuente.
 
-## Otras notas
+## Móvil
 
-- El retrato va en `contain` en móvil: con `cover`, un 2.36:1 en pantalla vertical
-  se recorta tanto que solo queda la nariz. La banda se ancla al tercio superior.
+**Set de imágenes propio.** El arte es 2.36:1. Recortado al 70 % del ancho sube a
+1.65:1 conservando los dos ojos con margen, lo que en un teléfono son un 43 % más
+de altura ocupada. Son los archivos `*-m480/800/1200.webp`, y el hero móvil los
+muestra a sangre de lado a lado en su relación natural.
+
+**No se puede llenar la pantalla entera con los dos ojos.** Los ojos ocupan el 62 %
+del ancho del arte; para llenar un móvil vertical (0.46:1) habría que recortar a
+menos de la mitad, y uno de los dos se queda fuera. La única forma de conseguir un
+hero a pantalla completa en móvil sería usar **un solo ojo** (un recorte de ~0.46:1
+centrado en uno de ellos, que sí llena y queda espectacular). Está sin implementar.
+
+**Rendimiento — modo ligero** (`src/lib/useDevice.js`). Se activa con puntero
+grueso, pocos núcleos o `prefers-reduced-motion`, y recorta lo que no aporta:
+
+- Se apagan **todos los bucles de parallax por cursor** (campos de destellos,
+  partículas del hero, halo de la capa de luz). En táctil no hay cursor, así que
+  eran seis `requestAnimationFrame` moviendo ~90 nodos por frame para nada.
+- Menos piezas por campo de destellos, menos orbes y blur más corto.
+- El `Tilt` de las tarjetas devuelve un `div` plano: sin cursor no se dispara nunca
+  y sólo añadía una capa de composición por tarjeta.
+
+Medido con la CPU 6× ralentizada: **18 → 24 FPS**, animaciones CSS simultáneas
+99 → 33, nodos 739 → 497, imágenes 51 → 32.
+
+**El carril de la galería no lleva `scroll-snap`.** Al empezar un gesto dentro de un
+contenedor con snap horizontal, Chrome ancla el desplazamiento a ese eje y se come
+el movimiento vertical: la página dejaba de bajar justo al llegar a la galería.
+Medido: 19 px de avance con snap, 385 sin él. No volver a añadirlo.
+
+## Otras notas
 - `SplitText` guarda el texto real en un `sr-only` y marca las letras animadas como
   `aria-hidden` + `select-none`: el lector de pantalla anuncia el titular completo y
   al seleccionar se copia limpio.

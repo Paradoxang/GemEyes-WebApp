@@ -3,13 +3,17 @@ import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import Portrait from './Portrait'
 import Particles from './Particles'
 import { SplitText } from './motion-kit'
-import { useGazeEngine, usePointerFine } from '../lib/useGazeEngine'
+import { useGazeEngine } from '../lib/useGazeEngine'
+import { useIsMobile, useLiteMode, usePointerFine } from '../lib/useDevice'
+import { ASPECT_MOBILE } from '../frames'
 
 export default function Hero() {
   const sectionRef = useRef(null)
   const stageRef = useRef(null)
   const reduced = useReducedMotion()
   const pointerFine = usePointerFine()
+  const isMobile = useIsMobile()
+  const lite = useLiteMode()
 
   const { frame, triggerSpark, leanX, leanY } = useGazeEngine(stageRef, {
     enabled: !reduced,
@@ -28,6 +32,79 @@ export default function Hero() {
   const contentY = useTransform(scrollYProgress, [0, 1], ['0%', '-38%'])
   const contentFade = useTransform(scrollYProgress, [0, 0.65], [1, 0])
 
+  const kicker = (
+    <motion.p
+      initial={reduced ? false : { opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, delay: 0.5 }}
+      className="text-center text-[11px] tracking-[0.32em] text-chalk uppercase"
+      style={{ textShadow: '0 0 18px rgba(28,4,18,.95)' }}
+    >
+      Dox Designs — Web Developing
+    </motion.p>
+  )
+
+  const title = (
+    <motion.h1
+      className="relative m-0 text-center font-display text-[clamp(42px,10vw,98px)] leading-[0.95] text-chalk uppercase"
+      style={{
+        textShadow:
+          '0 2px 30px rgba(28,4,18,.9),0 0 70px rgba(28,4,18,.75),0 0 110px rgba(251,111,146,.4)',
+      }}
+      animate={reduced ? undefined : { y: [0, -11, 0, 7, 0], rotate: [0, -0.7, 0, 0.7, 0] }}
+      transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+    >
+      <SplitText text="Gem Eyes" delay={0.2} per={0.055} />
+    </motion.h1>
+  )
+
+  /* ------------------------------------------------------------------ MÓVIL */
+  // El arte es apaisado 2.36:1. Recortado al 70% sube a 1.65:1, que a ancho
+  // completo ocupa bastante más alto sin perder ninguno de los dos ojos. Va en
+  // el flujo, a sangre de lado a lado, y el texto debajo.
+  if (isMobile) {
+    return (
+      <section
+        id="top"
+        ref={sectionRef}
+        className="relative flex min-h-svh flex-col justify-center gap-9 overflow-hidden px-5 pt-28 pb-16"
+      >
+        <motion.div
+          ref={stageRef}
+          onClick={triggerSpark}
+          initial={reduced ? false : { opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
+          className="relative -mx-5 cursor-pointer"
+        >
+          <Portrait
+            frame={frame}
+            mobile
+            spark={frame.key === 'spark'}
+            className="w-full"
+            style={{ aspectRatio: ASPECT_MOBILE }}
+          />
+          {/* Fundido sólo en los bordes superior e inferior de la banda, para
+              que no quede un corte duro contra el fondo. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(180deg,rgba(28,4,18,.85) 0%,rgba(28,4,18,0) 16%,rgba(28,4,18,0) 84%,rgba(28,4,18,.85) 100%)',
+            }}
+          />
+        </motion.div>
+
+        <div className="relative flex flex-col items-center">
+          {kicker}
+          <div className="mt-3">{title}</div>
+        </div>
+      </section>
+    )
+  }
+
+  /* ------------------------------------------------------------- ESCRITORIO */
   return (
     <section
       id="top"
@@ -35,7 +112,6 @@ export default function Hero() {
       className="relative flex min-h-svh flex-col items-center justify-end overflow-hidden px-5 pt-28 pb-24 sm:px-14"
       style={{ isolation: 'isolate' }}
     >
-      {/* Capa 0 — los catorce frames más la capa de destellos */}
       <motion.div
         ref={stageRef}
         onClick={triggerSpark}
@@ -44,19 +120,12 @@ export default function Hero() {
         data-hot
       >
         <motion.div className="h-full w-full" style={reduced ? undefined : { y: stageY }}>
-          <Portrait
-            frame={frame}
-            spark={frame.key === 'spark'}
-            contain={!pointerFine}
-            className="h-full w-full"
-          />
+          <Portrait frame={frame} spark={frame.key === 'spark'} className="h-full w-full" />
         </motion.div>
       </motion.div>
 
-      {/* Capa 1 — sin oscurecimiento general: el retrato se ve entero.
-          Sólo queda una banda muy corta arriba para que el nav se lea, y una
-          mancha suave y ceñida detrás del bloque de texto. El corte con la
-          marquesina se deja seco a propósito. */}
+      {/* Sin oscurecimiento general: sólo una banda corta arriba para que el nav
+          se lea y una mancha ceñida detrás del bloque de texto. */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-[1]"
@@ -74,23 +143,13 @@ export default function Hero() {
         }}
       />
 
-      <Particles className="absolute inset-0 z-[2]" />
+      {!lite && <Particles className="absolute inset-0 z-[2]" />}
 
-      {/* Capa 3 — bloque de texto compacto, anclado abajo para dejar los ojos libres */}
       <motion.div
         className="relative z-[3] flex w-full max-w-[1100px] flex-col items-center"
         style={reduced ? undefined : { y: contentY, opacity: contentFade }}
       >
-        <motion.p
-          initial={reduced ? false : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-          className="text-center font-mono text-[11px] tracking-[0.32em] text-chalk uppercase"
-          style={{ textShadow: '0 0 18px rgba(28,4,18,.95)' }}
-        >
-          Dox Designs — Web Developing
-        </motion.p>
-
+        {kicker}
         <div className="relative mt-4 flex w-full justify-center">
           <motion.div
             aria-hidden="true"
@@ -105,21 +164,8 @@ export default function Hero() {
               filter: 'blur(16px)',
             }}
           />
-          {/* Flotación continua: el titular sube y baja despacio y se balancea un
-              poco, para que no se sienta pegado al fondo. */}
-          <motion.h1
-            className="relative m-0 text-center font-display text-[clamp(42px,6.2vw,98px)] leading-[0.95] text-chalk uppercase"
-            style={{
-              textShadow:
-                '0 2px 30px rgba(28,4,18,.9),0 0 70px rgba(28,4,18,.75),0 0 110px rgba(251,111,146,.4)',
-            }}
-            animate={reduced ? undefined : { y: [0, -11, 0, 7, 0], rotate: [0, -0.7, 0, 0.7, 0] }}
-            transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <SplitText text="Gem Eyes" delay={0.2} per={0.055} />
-          </motion.h1>
+          {title}
         </div>
-
       </motion.div>
     </section>
   )

@@ -3,6 +3,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import { ArrowUpRight } from 'lucide-react'
 import { Counter, Glitch, Magnetic, Reveal, SplitText, Tilt } from './motion-kit'
 import SparkleField from './SparkleField'
+import { useLiteMode, usePointerFine } from '../lib/useDevice'
 import { FRAMES } from '../frames'
 
 const SPARK_PATH =
@@ -168,6 +169,7 @@ const SHOWCASE = ['c', 'spark', 'r', 'b100', 'idle', 'tl', 'b']
 export function Gallery() {
   const railRef = useRef(null)
   const reduced = useReducedMotion()
+  const pointerFine = usePointerFine()
 
   return (
     <section id="galeria" className="relative overflow-hidden py-24 md:py-32">
@@ -196,14 +198,17 @@ export function Gallery() {
         </Reveal>
       </div>
 
-      <motion.div
-        ref={railRef}
-        drag={reduced ? false : 'x'}
-        dragConstraints={{ left: -1400, right: 0 }}
-        dragElastic={0.08}
-        dragMomentum
-        className="gm-noscrollbar mt-12 flex cursor-grab gap-5 overflow-x-auto px-5 pt-1 pb-6 active:cursor-grabbing sm:px-14"
-        style={{ scrollSnapType: 'x proximity' }}
+      {/* En táctil este carril NO puede ser un motion.div con props de drag.
+          Aunque se pase `drag={false}`, la sola presencia de dragConstraints y
+          compañía monta el reconocedor de gestos de Framer, que se tragaba el
+          swipe vertical en cuanto el dedo empezaba encima de una figura: la
+          página dejaba de bajar justo al llegar a la galería. Con cursor sí
+          interesa el arrastre, porque el scroll horizontal nativo con rueda es
+          incómodo. */}
+      <Rail
+        railRef={railRef}
+        draggable={pointerFine && !reduced}
+        className="gm-noscrollbar mt-12 flex gap-5 overflow-x-auto px-5 pt-1 pb-6 sm:px-14 lg:cursor-grab lg:active:cursor-grabbing"
       >
         {SHOWCASE.map((key, i) => (
           <motion.figure
@@ -213,7 +218,6 @@ export function Gallery() {
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.55, delay: (i % 4) * 0.08 }}
             className="m-0 w-[min(470px,78vw)] flex-none"
-            style={{ scrollSnapAlign: 'start' }}
           >
             <div className="relative overflow-hidden rounded-[12px] border border-edge shadow-[0_0_40px_rgba(251,111,146,.14)] transition-colors duration-300 hover:border-pink/60">
               <img
@@ -234,8 +238,42 @@ export function Gallery() {
             </figcaption>
           </motion.figure>
         ))}
-      </motion.div>
+      </Rail>
     </section>
+  )
+}
+
+/**
+ * Carril de la galería.
+ *
+ * Sin `scroll-snap-type`: era lo que bloqueaba el scroll vertical de la página.
+ * Al empezar el gesto dentro de un contenedor con snap horizontal, Chrome ancla
+ * el desplazamiento a ese eje y se come el movimiento vertical, así que al llegar
+ * a la galería la página dejaba de bajar. Medido: 19 px de avance con snap, 385
+ * sin él. El scroll horizontal nativo sigue funcionando igual.
+ *
+ * El arrastre de Framer sólo se monta con cursor, donde el scroll horizontal con
+ * rueda es incómodo.
+ */
+function Rail({ railRef, draggable, className, children }) {
+  if (!draggable) {
+    return (
+      <div ref={railRef} className={className}>
+        {children}
+      </div>
+    )
+  }
+  return (
+    <motion.div
+      ref={railRef}
+      drag="x"
+      dragConstraints={{ left: -1400, right: 0 }}
+      dragElastic={0.08}
+      dragMomentum
+      className={className}
+    >
+      {children}
+    </motion.div>
   )
 }
 

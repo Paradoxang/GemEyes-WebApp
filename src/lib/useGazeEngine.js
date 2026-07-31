@@ -261,20 +261,4 @@ export function useGazeEngine(targetRef, { enabled = true, pointerFine = true } 
   return { frame, triggerSpark, leanX, leanY }
 }
 
-/** true cuando el dispositivo tiene un puntero fino (ratón / trackpad). */
-export function usePointerFine() {
-  const [fine, setFine] = useState(
-    () =>
-      typeof window !== 'undefined' &&
-      window.matchMedia('(hover: hover) and (pointer: fine)').matches,
-  )
-  useEffect(() => {
-    const mq = window.matchMedia('(hover: hover) and (pointer: fine)')
-    const onChange = (event) => setFine(event.matches)
-    mq.addEventListener('change', onChange)
-    return () => mq.removeEventListener('change', onChange)
-  }, [])
-  return fine
-}
-
 export { GAZE_KEYS }

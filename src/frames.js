@@ -1,23 +1,32 @@
 const BASE = '/media'
 
 // Sólo WebP. A 2400px y calidad 80 el AVIF salía más pesado que el WebP para esta
-// ilustración (2.034 KB frente a 1.525 KB en el juego completo), y como el AVIF va
-// primero en el <picture> el navegador acababa eligiendo la opción peor.
+// ilustración, y como el AVIF va primero en el <picture> el navegador acababa
+// eligiendo la opción peor.
 const WIDTHS = [800, 1200, 1584, 2400]
 
+// Set móvil: mismo arte recortado al 70% del ancho. Conserva los dos ojos con
+// margen y sube la relación de aspecto de 2.36 a 1.65, que en un teléfono son un
+// 43% más de altura ocupada.
+const MOBILE_WIDTHS = [480, 800, 1200]
+
 const srcset = (slug) => WIDTHS.map((w) => `${BASE}/${slug}-${w}.webp ${w}w`).join(', ')
+const srcsetMobile = (slug) =>
+  MOBILE_WIDTHS.map((w) => `${BASE}/${slug}-m${w}.webp ${w}w`).join(', ')
 
 const frame = (slug, label, short) => ({
   slug,
   label,
   short: short ?? label,
   webp: srcset(slug),
+  mobile: srcsetMobile(slug),
   src: `${BASE}/${slug}-1584.webp`,
-  full: `${BASE}/${slug}-2400.webp`,
+  srcMobile: `${BASE}/${slug}-m800.webp`,
 })
 
-/** Relación de aspecto nativa de los frames. */
+/** Relación de aspecto del arte completo y del recorte móvil. */
 export const ASPECT = 2.357
+export const ASPECT_MOBILE = 1.65
 
 export const GAZE = {
   tl: frame('framediagonalizquierdaarriba', 'Mirada arriba a la izquierda', 'Arriba izq.'),
@@ -49,7 +58,9 @@ export const FRAME_KEYS = Object.keys(FRAMES)
 /** Capa de destellos extraída del frame de ojos brillantes. */
 export const GLINTS = {
   webp: [800, 1584, 2400].map((w) => `${BASE}/glints-${w}.webp ${w}w`).join(', '),
+  mobile: MOBILE_WIDTHS.map((w) => `${BASE}/glints-m${w}.webp ${w}w`).join(', '),
   src: `${BASE}/glints-1584.webp`,
+  srcMobile: `${BASE}/glints-m800.webp`,
 }
 
 export const GRID = {
@@ -85,18 +96,33 @@ export function pathBetween(from, to) {
 export const TOUR = ['c', 'tl', 't', 'tr', 'r', 'br', 'b', 'bl', 'l']
 
 /**
- * Elige el tier que hace falta según el ancho de ventana, para que el precargador
- * descargue exactamente lo que el <picture> va a pedir después.
+ * Qué archivos debe precargar la pantalla de carga.
+ *
+ * Tiene que coincidir con lo que el <picture> pedirá después; si no, se descarga
+ * un tier que no se usa y luego otro encima. En móvil manda el ancho (el retrato
+ * se muestra entero) y en escritorio manda la altura, porque el recorte en
+ * `cover` sobre una imagen apaisada se escala por altura.
  */
-export function tierFor(width, height, dpr = 1) {
-  // Mismo cálculo que el `sizes` del retrato: con `cover` sobre una imagen 2.36:1
-  // el ancho necesario lo marca la altura de la ventana, no su ancho.
-  const cssNeed = Math.max(width, height * ASPECT * 1.04)
-  const need = cssNeed * Math.min(dpr, 2)
-  return WIDTHS.find((w) => w >= need) ?? WIDTHS[WIDTHS.length - 1]
+export function preloadPlan({ width, height, dpr = 1, mobile }) {
+  const scale = Math.min(dpr, 2)
+  if (mobile) {
+    const need = width * scale
+    const tier = MOBILE_WIDTHS.find((w) => w >= need) ?? MOBILE_WIDTHS.at(-1)
+    return {
+      tier,
+      urls: [
+        ...FRAME_KEYS.map((k) => `${BASE}/${FRAMES[k].slug}-m${tier}.webp`),
+        `${BASE}/glints-m${tier}.webp`,
+      ],
+    }
+  }
+  const need = Math.max(width, height * ASPECT * 1.04) * scale
+  const tier = WIDTHS.find((w) => w >= need) ?? WIDTHS.at(-1)
+  return {
+    tier,
+    urls: [
+      ...FRAME_KEYS.map((k) => `${BASE}/${FRAMES[k].slug}-${tier}.webp`),
+      `${BASE}/glints-${tier === 1200 ? 1584 : tier}.webp`,
+    ],
+  }
 }
-
-export const preloadList = (tier) => [
-  ...FRAME_KEYS.map((k) => `${BASE}/${FRAMES[k].slug}-${tier}.webp`),
-  `${BASE}/glints-${tier === 1200 ? 1584 : tier}.webp`,
-]

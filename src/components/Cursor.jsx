@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useMotionValue, useSpring } from 'motion/react'
-import { usePointerFine } from '../lib/useGazeEngine'
+import { usePointerFine } from '../lib/useDevice'
 
 /**
  * Cursor propio: un punto que sigue al puntero sin retardo y un anillo que llega

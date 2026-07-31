@@ -7,6 +7,7 @@ import {
   useSpring,
   useTransform,
 } from 'motion/react'
+import { usePointerFine } from '../lib/useDevice'
 
 /* ---------------------------------------------------------------------------
  * Título ensamblado letra a letra. El texto accesible va en aria-label y las
@@ -151,6 +152,7 @@ export function Magnetic({ children, strength = 0.32, className = '', ...rest })
  * ------------------------------------------------------------------------- */
 export function Tilt({ children, className = '', max = 7 }) {
   const reduced = useReducedMotion()
+  const pointerFine = usePointerFine()
   const ref = useRef(null)
   const px = useMotionValue(0.5)
   const py = useMotionValue(0.5)
@@ -171,13 +173,17 @@ export function Tilt({ children, className = '', max = 7 }) {
     py.set(0.5)
   }
 
+  // Sin cursor la inclinación no se dispara nunca, así que el envoltorio 3D sólo
+  // añadiría una capa de composición por tarjeta.
+  if (reduced || !pointerFine) return <div className={className}>{children}</div>
+
   return (
     <div style={{ perspective: '900px' }}>
       <motion.div
         ref={ref}
         onPointerMove={onMove}
         onPointerLeave={reset}
-        style={reduced ? undefined : { rotateX, rotateY, transformStyle: 'preserve-3d' }}
+        style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
         className={className}
       >
         {children}

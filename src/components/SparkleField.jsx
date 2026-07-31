@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useReducedMotion } from 'motion/react'
+import { useLiteMode, usePointerFine } from '../lib/useDevice'
 
 const SPARK_PATH =
   'M12 0 L13.5 10.5 L24 12 L13.5 13.5 L12 24 L10.5 13.5 L0 12 L10.5 10.5 Z'
@@ -56,12 +57,18 @@ export default function SparkleField({
   parallax = 26,
 }) {
   const reduced = useReducedMotion()
-  const items = useMemo(() => buildItems(seed, count), [seed, count])
+  const pointerFine = usePointerFine()
+  const lite = useLiteMode()
+  // En modo ligero se reparten menos piezas: cada una lleva su propia animación
+  // CSS y sumadas eran el grueso de las ~99 animaciones simultáneas.
+  const realCount = lite ? Math.max(3, Math.round(count * 0.35)) : count
+  const items = useMemo(() => buildItems(seed, realCount), [seed, realCount])
   const hostRef = useRef(null)
   const nodes = useRef([])
 
   useEffect(() => {
-    if (reduced || !parallax) return
+    // Sin cursor no hay nada a lo que reaccionar: el bucle sería trabajo tirado.
+    if (reduced || !parallax || !pointerFine) return
     const host = hostRef.current
     if (!host) return
 
@@ -95,7 +102,7 @@ export default function SparkleField({
       window.removeEventListener('pointermove', onMove)
       cancelAnimationFrame(raf)
     }
-  }, [items, parallax, reduced])
+  }, [items, parallax, reduced, pointerFine])
 
   return (
     <div

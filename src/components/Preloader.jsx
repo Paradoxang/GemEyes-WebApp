@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { preloadList, tierFor } from '../frames'
+import { preloadPlan } from '../frames'
 
 const SPARK_PATH =
   'M12 0 L13.5 10.5 L24 12 L13.5 13.5 L12 24 L10.5 13.5 L0 12 L10.5 10.5 Z'
@@ -15,8 +15,16 @@ export default function Preloader({ onDone }) {
   const [visible, setVisible] = useState(true)
 
   useEffect(() => {
-    const tier = tierFor(window.innerWidth, window.innerHeight, window.devicePixelRatio || 1)
-    const urls = preloadList(tier)
+    // El plan tiene que coincidir con lo que el <picture> pedirá luego. Antes se
+    // calculaba siempre con la fórmula de escritorio y en el móvil se descargaba
+    // el tier de 2400 (1,5 MB) que la página no llegaba a usar, y encima después
+    // bajaba el suyo.
+    const { urls } = preloadPlan({
+      width: window.innerWidth,
+      height: window.innerHeight,
+      dpr: window.devicePixelRatio || 1,
+      mobile: window.matchMedia('(max-width: 860px)').matches,
+    })
     let done = 0
     let cancelled = false
 

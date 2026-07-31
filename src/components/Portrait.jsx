@@ -3,14 +3,14 @@ import { motion } from 'motion/react'
 import { FRAMES, FRAME_KEYS, GLINTS, GRID } from '../frames'
 
 /**
- * En `cover` el recorte manda: la imagen es 2.36:1 y el hueco es más alto que
- * ancho, así que se escala por altura y el ancho que hace falta es ~2,45×la altura
- * de la ventana, no el ancho. Con `100vw` el navegador pedía un tier menor del
+ * En `cover` el recorte manda: la imagen es apaisada y el hueco es más alto que
+ * ancho, así que se escala por altura y el ancho necesario es ~2,45× la altura de
+ * la ventana, no el ancho. Con `100vw` el navegador pedía un tier menor del
  * necesario y el retrato salía reescalado hacia arriba.
- * En `contain` no hay recorte y manda el ancho.
+ * En móvil el retrato se ve entero, así que manda el ancho.
  */
 const SIZES_COVER = '245vh'
-const SIZES_CONTAIN = '100vw'
+const SIZES_MOBILE = '100vw'
 
 /**
  * Los 14 frames apilados. La opacidad se maneja a mano y no con Framer porque el
@@ -21,15 +21,16 @@ const SIZES_CONTAIN = '100vw'
  *
  * Si ambos se cruzan (uno bajando y otro subiendo) sus opacidades suman menos de 1
  * a mitad de camino y se transparenta el fondo oscuro de la página: eso producía
- * un oscurecimiento visible en cada cambio de dirección. Manteniendo el saliente
- * a 1 debajo, la suma nunca baja de 1 y sólo se ve morfear la pupila.
+ * un oscurecimiento visible en cada cambio de dirección.
  */
-export default function Portrait({ frame, contain = false, spark = false, className = '' }) {
+export default function Portrait({
+  frame,
+  mobile = false,
+  spark = false,
+  className = '',
+  style,
+}) {
   const { key, fade } = frame
-  const objectFit = contain ? 'contain' : 'cover'
-  const objectPosition = contain ? '50% 34%' : '50% 44%'
-  const sizes = contain ? SIZES_CONTAIN : SIZES_COVER
-
   const layers = useRef({})
   const current = useRef('c')
   const lastGaze = useRef([0, 0])
@@ -63,17 +64,22 @@ export default function Portrait({ frame, contain = false, spark = false, classN
     current.current = key
   }, [key, fade])
 
-  // Los destellos se extrajeron del frame "ojos destellando", así que están
-  // anclados a las pupilas centradas. Desplazarlos con la mirada hace que el
-  // brillo acompañe al ojo en vez de quedarse clavado en el centro.
+  // Los destellos se extrajeron del frame "ojos destellando", anclados a las
+  // pupilas centradas. Desplazarlos con la mirada hace que el brillo acompañe al
+  // ojo en vez de quedarse clavado en el centro.
   if (GRID[key]) lastGaze.current = GRID[key]
   const [gx, gy] = lastGaze.current
+
+  const sizes = mobile ? SIZES_MOBILE : SIZES_COVER
+  const objectFit = mobile ? 'fill' : 'cover'
+  const objectPosition = mobile ? '50% 50%' : '50% 44%'
 
   return (
     <div
       role="img"
       aria-label={`Retrato ilustrado con ojos de gema. Estado actual: ${FRAMES[key].label}.`}
       className={`relative overflow-hidden bg-void ${className}`}
+      style={style}
     >
       {FRAME_KEYS.map((k) => (
         <div
@@ -86,12 +92,10 @@ export default function Portrait({ frame, contain = false, spark = false, classN
           style={{ opacity: k === 'c' ? 1 : 0, zIndex: k === 'c' ? 2 : 0 }}
         >
           <img
-            src={FRAMES[k].src}
-            srcSet={FRAMES[k].webp}
+            src={mobile ? FRAMES[k].srcMobile : FRAMES[k].src}
+            srcSet={mobile ? FRAMES[k].mobile : FRAMES[k].webp}
             sizes={sizes}
             alt=""
-            width={2400}
-            height={1018}
             decoding={k === 'c' ? 'sync' : 'async'}
             fetchPriority={k === 'c' ? 'high' : 'low'}
             draggable="false"
@@ -102,8 +106,8 @@ export default function Portrait({ frame, contain = false, spark = false, classN
       ))}
 
       <motion.img
-        src={GLINTS.src}
-        srcSet={GLINTS.webp}
+        src={mobile ? GLINTS.srcMobile : GLINTS.src}
+        srcSet={mobile ? GLINTS.mobile : GLINTS.webp}
         sizes={sizes}
         alt=""
         aria-hidden="true"

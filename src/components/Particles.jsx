@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useReducedMotion } from 'motion/react'
+import { usePointerFine } from '../lib/useDevice'
 
 const SPARK_PATH =
   'M12 0 L13.5 10.5 L24 12 L13.5 13.5 L12 24 L10.5 13.5 L0 12 L10.5 10.5 Z'
@@ -28,11 +29,13 @@ const ITEMS = [
  */
 export default function Particles({ className = '' }) {
   const reduced = useReducedMotion()
+  const pointerFine = usePointerFine()
   const hostRef = useRef(null)
   const nodes = useRef([])
 
   useEffect(() => {
-    if (reduced) return
+    // El repelido sólo tiene sentido con cursor; en táctil el bucle sobra.
+    if (reduced || !pointerFine) return
     const host = hostRef.current
     if (!host) return
 
@@ -82,7 +85,7 @@ export default function Particles({ className = '' }) {
       document.removeEventListener('pointerleave', onLeave)
       cancelAnimationFrame(raf)
     }
-  }, [reduced])
+  }, [reduced, pointerFine])
 
   return (
     <div ref={hostRef} aria-hidden="true" className={`pointer-events-none ${className}`}>

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
+import { useLiteMode, usePointerFine } from '../lib/useDevice'
 
 /** Orbes de luz a la deriva. Cada uno con su propio ritmo para que nunca rimen. */
 const ORBS = [
@@ -16,6 +17,8 @@ const ORBS = [
  */
 export default function LightLayer() {
   const reduced = useReducedMotion()
+  const pointerFine = usePointerFine()
+  const lite = useLiteMode()
   const { scrollYProgress } = useScroll()
 
   const rayY = useTransform(scrollYProgress, [0, 1], ['-12%', '26%'])
@@ -29,7 +32,7 @@ export default function LightLayer() {
   const raf = useRef(0)
 
   useEffect(() => {
-    if (reduced) return
+    if (reduced || !pointerFine) return
     const onMove = (event) => {
       if (raf.current) return
       raf.current = requestAnimationFrame(() => {
@@ -43,11 +46,16 @@ export default function LightLayer() {
       window.removeEventListener('pointermove', onMove)
       if (raf.current) cancelAnimationFrame(raf.current)
     }
-  }, [reduced, mx, my])
+  }, [reduced, pointerFine, mx, my])
+
+  // El blur de 24px sobre orbes de 600px es de lo más caro que hay en la página;
+  // en equipos flojos se recorta y se dejan menos orbes.
+  const orbs = lite ? ORBS.slice(0, 2) : ORBS
+  const orbBlur = lite ? 'blur(12px)' : 'blur(24px)'
 
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-      {ORBS.map((orb, i) => (
+      {orbs.map((orb, i) => (
         <motion.div
           key={i}
           className="absolute rounded-full"
@@ -57,7 +65,7 @@ export default function LightLayer() {
             left: orb.x,
             top: orb.y,
             background: `radial-gradient(circle, ${orb.from}, transparent 68%)`,
-            filter: 'blur(24px)',
+            filter: orbBlur,
           }}
           animate={
             reduced
@@ -82,7 +90,7 @@ export default function LightLayer() {
       />
 
       {/* Halo que persigue al cursor por toda la página */}
-      {!reduced && (
+      {!reduced && pointerFine && (
         <motion.div
           className="absolute top-0 left-0 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{
