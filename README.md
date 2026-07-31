@@ -146,6 +146,11 @@ esos cuatro.
 a pedir de verdad antes de descubrir la página, con barra de progreso. Se cae solo a
 los 9 s si algo se atasca, y un frame que falle no bloquea la carga.
 
+**Los PNG originales no están en el repo.** Los catorce `Frame*.png` (73,8 MB) están
+en `.gitignore`: siguen en la carpeta del proyecto pero fuera del control de
+versiones, para que un clon pese 4 MB en vez de 78. Si los necesitas para regenerar
+los WebP, pídeselos a quien tenga el arte fuente.
+
 ## Otras notas
 
 - El retrato va en `contain` en móvil: con `cover`, un 2.36:1 en pantalla vertical
@@ -171,7 +176,8 @@ Lo que descarga un visitante es **un solo tier**, no todo el disco.
 
 | | |
 |---|---|
-| PNG originales | 73,8 MB |
+| PNG originales (fuera del repo) | 73,8 MB |
+| Clon del repo | 4,2 MB |
 | WebP en disco (4 anchos, 14 frames) | 3,2 MB |
 | Lo que baja un móvil (tier 800) | ~354 KB |
 | Lo que baja un escritorio 1440×900 (tier 2400) | ~1,5 MB |
