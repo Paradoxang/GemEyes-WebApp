@@ -1,9 +1,8 @@
 import { useRef } from 'react'
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
-import { ArrowDown } from 'lucide-react'
 import Portrait from './Portrait'
 import Particles from './Particles'
-import { Magnetic, SplitText } from './motion-kit'
+import { SplitText } from './motion-kit'
 import { useGazeEngine, usePointerFine } from '../lib/useGazeEngine'
 
 export default function Hero() {
@@ -33,7 +32,7 @@ export default function Hero() {
     <section
       id="top"
       ref={sectionRef}
-      className="relative flex min-h-svh flex-col items-center justify-end overflow-hidden px-5 pt-28 pb-16 sm:px-14"
+      className="relative flex min-h-svh flex-col items-center justify-end overflow-hidden px-5 pt-28 pb-24 sm:px-14"
       style={{ isolation: 'isolate' }}
     >
       {/* Capa 0 — los catorce frames más la capa de destellos */}
@@ -109,7 +108,7 @@ export default function Hero() {
           {/* Flotación continua: el titular sube y baja despacio y se balancea un
               poco, para que no se sienta pegado al fondo. */}
           <motion.h1
-            className="relative m-0 text-center font-display text-[clamp(34px,4.8vw,74px)] leading-[0.95] text-chalk uppercase"
+            className="relative m-0 text-center font-display text-[clamp(42px,6.2vw,98px)] leading-[0.95] text-chalk uppercase"
             style={{
               textShadow:
                 '0 2px 30px rgba(28,4,18,.9),0 0 70px rgba(28,4,18,.75),0 0 110px rgba(251,111,146,.4)',
@@ -120,21 +119,6 @@ export default function Hero() {
             <SplitText text="Gem Eyes" delay={0.2} per={0.055} />
           </motion.h1>
         </div>
-
-        <motion.div
-          initial={reduced ? false : { opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.9 }}
-          className="mt-7"
-        >
-          <Magnetic
-            href="#estudio"
-            className="inline-flex items-center justify-center gap-3 rounded-full border border-chalk/25 bg-chalk/10 px-9 py-3.5 font-mono text-[11px] tracking-[0.24em] text-chalk uppercase backdrop-blur-[14px] transition-colors duration-200 hover:border-chalk/60 hover:bg-chalk/20"
-          >
-            Ver el trabajo
-            <ArrowDown aria-hidden="true" className="h-3.5 w-3.5" />
-          </Magnetic>
-        </motion.div>
 
       </motion.div>
     </section>
