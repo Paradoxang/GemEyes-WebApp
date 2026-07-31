@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-07-30T19:56:53.665Z",
+  "input": "FrameMirandoDerecha.png",
+  "name": "framemirandoderecha",
+  "outDir": "C:\\Users\\Santiago pc\\Proyectos\\ProyectoAnimated\\public\\media",
+  "quality": 74,
+  "type": "image",
+  "source": {
+    "width": 3168,
+    "height": 1344,
+    "hasAlpha": true
+  },
+  "aspectRatio": 2.3571,
+  "lqip": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAACQAwCdASoYAAoAPu1mq04ppaQiMAgBMB2JZgCdMoABCsJ8UCgAAP3NtnFa5zPd+NY3cf6Dry+RHn5Jw+U0iZfTPeSNS0JLOtpHj67I7AAAAA==",
+  "widths": [
+    800,
+    1200,
+    1584
+  ],
+  "srcset": {
+    "avif": "framemirandoderecha-800.avif 800w, framemirandoderecha-1200.avif 1200w, framemirandoderecha-1584.avif 1584w",
+    "webp": "framemirandoderecha-800.webp 800w, framemirandoderecha-1200.webp 1200w, framemirandoderecha-1584.webp 1584w"
+  },
+  "fallback": "framemirandoderecha-1584.png",
+  "outputs": [
+    {
+      "format": "avif",
+      "width": 800,
+      "file": "framemirandoderecha-800.avif",
+      "kb": 21
+    },
+    {
+      "format": "webp",
+      "width": 800,
+      "file": "framemirandoderecha-800.webp",
+      "kb": 25
+    },
+    {
+      "format": "avif",
+      "width": 1200,
+      "file": "framemirandoderecha-1200.avif",
+      "kb": 31
+    },
+    {
+      "format": "webp",
+      "width": 1200,
+      "file": "framemirandoderecha-1200.webp",
+      "kb": 40
+    },
+    {
+      "format": "avif",
+      "width": 1584,
+      "file": "framemirandoderecha-1584.avif",
+      "kb": 41
+    },
+    {
+      "format": "webp",
+      "width": 1584,
+      "file": "framemirandoderecha-1584.webp",
+      "kb": 55
+    },
+    {
+      "format": "png",
+      "width": 1584,
+      "file": "framemirandoderecha-1584.png",
+      "kb": 2366,
+      "fallback": true
+    }
+  ]
+}

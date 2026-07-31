@@ -1,0 +1,13 @@
+node_modules
+dist
+.DS_Store
+*.local
+
+# Permisos y rutas propias de esta máquina
+.claude/settings.local.json
+
+# Arte fuente: 73,8 MB de PNG que no hacen falta para servir la web.
+# Siguen en la carpeta del proyecto, sólo quedan fuera del repo.
+# De ellos salen los WebP de public/media (ver README).
+Frame*.png
+

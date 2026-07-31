@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-07-30T19:57:09.956Z",
+  "input": "FrameOjosDestellando.png",
+  "name": "frameojosdestellando",
+  "outDir": "C:\\Users\\Santiago pc\\Proyectos\\ProyectoAnimated\\public\\media",
+  "quality": 74,
+  "type": "image",
+  "source": {
+    "width": 1584,
+    "height": 672,
+    "hasAlpha": true
+  },
+  "aspectRatio": 2.3571,
+  "lqip": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAACwAwCdASoYAAoAPu1kqk4ppaQiMAgBMB2JZgCdMoACWhDYVggygAD8xDAvFhQBWeEkoI1yOmzGTtRmXnLUbFPduEI73BkE8YurcIAA",
+  "widths": [
+    800,
+    1200,
+    1584
+  ],
+  "srcset": {
+    "avif": "frameojosdestellando-800.avif 800w, frameojosdestellando-1200.avif 1200w, frameojosdestellando-1584.avif 1584w",
+    "webp": "frameojosdestellando-800.webp 800w, frameojosdestellando-1200.webp 1200w, frameojosdestellando-1584.webp 1584w"
+  },
+  "fallback": "frameojosdestellando-1584.png",
+  "outputs": [
+    {
+      "format": "avif",
+      "width": 800,
+      "file": "frameojosdestellando-800.avif",
+      "kb": 23
+    },
+    {
+      "format": "webp",
+      "width": 800,
+      "file": "frameojosdestellando-800.webp",
+      "kb": 27
+    },
+    {
+      "format": "avif",
+      "width": 1200,
+      "file": "frameojosdestellando-1200.avif",
+      "kb": 34
+    },
+    {
+      "format": "webp",
+      "width": 1200,
+      "file": "frameojosdestellando-1200.webp",
+      "kb": 42
+    },
+    {
+      "format": "avif",
+      "width": 1584,
+      "file": "frameojosdestellando-1584.avif",
+      "kb": 44
+    },
+    {
+      "format": "webp",
+      "width": 1584,
+      "file": "frameojosdestellando-1584.webp",
+      "kb": 58
+    },
+    {
+      "format": "png",
+      "width": 1584,
+      "file": "frameojosdestellando-1584.png",
+      "kb": 1989,
+      "fallback": true
+    }
+  ]
+}
