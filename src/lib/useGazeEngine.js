@@ -6,8 +6,11 @@ import { GAZE_KEYS, TOUR, pathBetween } from '../frames'
 // El fundido dura más que el intervalo entre pasos a propósito: los frames
 // intermedios nunca llegan a opacidad 1, así que el ojo parece deslizarse en vez
 // de saltar. Esto es lo que hace que "casi no se note el cambio de frame".
-const GAZE_FADE = 260
-const GAZE_STEP = 140
+//
+// Un cuarto más rápido que antes (260/140). El parpadeo NO se toca: sigue con
+// sus tiempos, que son los que lo hacen leerse como un parpadeo.
+const GAZE_FADE = 195
+const GAZE_STEP = 105
 
 // --- Parpadeo ---------------------------------------------------------------
 // Corte seco (fade 0) en cada fase: si se funde, deja de leerse como parpadeo y

@@ -24,7 +24,6 @@ export default function Preloader({ onDone }) {
       height: window.innerHeight,
       dpr: window.devicePixelRatio || 1,
       mobile: window.matchMedia('(max-width: 860px)').matches,
-      portrait: window.matchMedia('(max-aspect-ratio: 9/10) and (max-width: 1180px)').matches,
     })
     let done = 0
     let cancelled = false

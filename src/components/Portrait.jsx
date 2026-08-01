@@ -10,10 +10,9 @@ import { FRAMES, FRAME_KEYS, GLINTS, GRID } from '../frames'
  * En móvil el retrato se ve entero, así que manda el ancho.
  */
 const SIZES_COVER = '245vh'
-const SIZES_MOBILE = '100vw'
-// Recorte vertical con `cover`: en pantallas más estrechas que 0.55 la imagen se
-// escala por altura y hace falta 55vh de ancho; en las más anchas manda el ancho.
-const SIZES_PORTRAIT = '(max-aspect-ratio: 55/100) 55vh, 100vw'
+// La banda móvil se pinta algo más ancha que la ventana para que los ojos se vean
+// más grandes, así que pide un poco más que 100vw.
+const SIZES_MOBILE = '112vw'
 
 /**
  * Los 14 frames apilados. La opacidad se maneja a mano y no con Framer porque el
@@ -29,7 +28,6 @@ const SIZES_PORTRAIT = '(max-aspect-ratio: 55/100) 55vh, 100vw'
 export default function Portrait({
   frame,
   mobile = false,
-  portrait = false,
   spark = false,
   className = '',
   style,
@@ -74,17 +72,11 @@ export default function Portrait({
   if (GRID[key]) lastGaze.current = GRID[key]
   const [gx, gy] = lastGaze.current
 
-  const sizes = portrait ? SIZES_PORTRAIT : mobile ? SIZES_MOBILE : SIZES_COVER
-  // En vertical el recorte ya tiene la forma de la pantalla, así que `cover`
-  // llena sin dejar bandas y recorta poquísimo.
+  const sizes = mobile ? SIZES_MOBILE : SIZES_COVER
   const objectFit = mobile ? 'fill' : 'cover'
-  const objectPosition = portrait ? '50% 50%' : mobile ? '50% 50%' : '50% 44%'
+  const objectPosition = mobile ? '50% 50%' : '50% 44%'
   const pick = (f) =>
-    portrait
-      ? { src: f.srcPortrait, srcSet: f.portrait }
-      : mobile
-        ? { src: f.srcMobile, srcSet: f.mobile }
-        : { src: f.src, srcSet: f.webp }
+    mobile ? { src: f.srcMobile, srcSet: f.mobile } : { src: f.src, srcSet: f.webp }
 
   return (
     <div

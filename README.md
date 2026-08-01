@@ -76,8 +76,9 @@ Cuatro capas con prioridad **destello/parpadeo > distracción > mirada**.
 
 - **Mirada suave.** No salta entre frames: calcula la ruta por la rejilla 3×3
   (`pathBetween` en `src/frames.js`) y pasa por los intermedios. De `l` a `r` cruza
-  por `c`. Con fundido de 260 ms y paso de 140 ms, los frames intermedios nunca
-  llegan a opacidad 1, así que el ojo parece deslizarse.
+  por `c`. Con fundido de 195 ms y paso de 105 ms, los frames intermedios nunca
+  llegan a opacidad 1, así que el ojo parece deslizarse. (Eran 260/140; se subió un
+  cuarto la velocidad. El parpadeo no se tocó.)
 - **Parpadeo con corte seco.** 30 → 70 → 100 → 70 → 30 sin fundido. Si se funde,
   deja de leerse como parpadeo y parece una disolvencia.
 - **Destello encadenado.** Después de *cada* parpadeo entra el frame de ojos
@@ -153,28 +154,26 @@ los WebP, pídeselos a quien tenga el arte fuente.
 
 ## Móvil
 
-Hay **tres encuadres** del mismo arte, y el hero elige según la forma de la pantalla:
+Hay **dos encuadres** del mismo arte:
 
 | Encuadre | Archivos | Aspecto | Cuándo |
 |---|---|---|---|
-| Completo | `*-800…2400.webp` | 2.36:1 | Escritorio y ventanas apaisadas |
-| Corto | `*-m480…1200.webp` | 1.65:1 | Ventanas estrechas y achatadas (móvil girado) |
-| Vertical | `*-p560…1600.webp` | 0.55:1 | Móvil y tablet de pie |
+| Completo | `*-800…2400.webp` | 2.36:1 | Escritorio |
+| Móvil | `*-m480…1200.webp` | 1.51:1 | Hasta 860 px de ancho |
 
-**El encuadre vertical es de un solo ojo, y es la única forma de llenar la
-pantalla.** Los dos ojos juntos ocupan el 62 % del ancho del arte: para llenar un
-móvil vertical (0.46:1) habría que recortar a menos de la mitad de eso y uno se
-queda fuera. Es geometría del arte, no una limitación del código.
+El móvil es el arte recortado al 64 % del ancho: conserva los dos ojos con margen
+y ocupa bastante más alto que el encuadre completo, que en un teléfono se queda en
+una banda fina. La banda se pinta además a **112 vw**, desbordando por los lados,
+para que los ojos salgan más grandes sin recortar nada del encuadre. En un móvil
+de 390 px eso da 437×289 en vez de los 390×165 del arte sin recortar.
 
-La posición del ojo **no está estimada a ojo**: se mide detectando el contorno
-oscuro del párpado por columnas. El ojo izquierdo va de 0.195 a 0.414 del ancho,
-centro en **0.3045**. Ese es el `CENTRO_X` del recorte. Un primer intento centrado
-en 0.318 dejaba la gema cortada por la izquierda.
-
-Ojo con el `cover`: sobre una pantalla más estrecha que el recorte, recorta otro
-tanto por los lados. Con recorte a 0.62 y un móvil a 0.46 se perdía un 12 % por
-lado y se comía el borde del ojo; por eso el recorte final es **0.55**, más cerca
-de la forma del teléfono.
+**Hubo un intento de hero a pantalla completa en vertical y se revirtió.** Consistía
+en un recorte 0.55:1 de un solo ojo — la única forma geométrica de llenar una
+pantalla alta, porque los dos ojos juntos ocupan el 62 % del ancho del arte. Llenaba
+bien, pero se perdía la animación completa. Si algún día se retoma: el ojo izquierdo
+va de 0.195 a 0.414 del ancho (centro **0.3045**, medido detectando el contorno del
+párpado por columnas, no a ojo), y hay que recordar que `cover` sobre una pantalla
+más estrecha que el recorte se come otro tanto por los lados.
 
 **Rendimiento — modo ligero** (`src/lib/useDevice.js`). Se activa con puntero
 grueso, pocos núcleos o `prefers-reduced-motion`, y recorta lo que no aporta:
@@ -191,8 +190,12 @@ Medido con la CPU 6× ralentizada: **18 → 24 FPS**, animaciones CSS simultáne
 
 ## Los post-its — `src/components/PostIts.jsx`
 
-Notas de papel clavadas con chincheta y unidas por un hilo de puntos. Dos detalles
-que costaron un par de vueltas:
+Notas de **cristal tintado** clavadas con chincheta y unidas por un hilo de puntos.
+El fondo de cada una es un degradado de rosa y cereza con alfa bajo, el desenfoque
+lo pone `backdrop-filter` y un reflejo diagonal es lo que las hace leerse como
+vidrio y no como un panel translúcido cualquiera.
+
+Tres detalles que costaron un par de vueltas:
 
 - **El hilo va por encima de las tarjetas 2 y 3**, no por los huecos entre
   columnas. El hueco de la retícula son 32 px y la línea quedaba tapada; el
@@ -206,10 +209,16 @@ que costaron un par de vueltas:
   eso deforma también el patrón de guiones: sin ese atributo salen cuatro rayas
   largas en vez de una línea de puntos.
 
-**El carril de la galería no lleva `scroll-snap`.** Al empezar un gesto dentro de un
-contenedor con snap horizontal, Chrome ancla el desplazamiento a ese eje y se come
-el movimiento vertical: la página dejaba de bajar justo al llegar a la galería.
-Medido: 19 px de avance con snap, 385 sin él. No volver a añadirlo.
+**La galería es una cinta en rotación continua, no un carril con scroll.** La pista
+lleva los catorce frames dos veces y se desplaza el 50 % de su ancho, así que al
+cerrar el ciclo la copia queda donde estaba la original y el salto no se ve. Se pausa
+al pasar el cursor por encima.
+
+Esto además resuelve de raíz un problema que dio guerra: tanto el `scroll-snap`
+horizontal como el `drag` de Framer se comían el swipe vertical de la página al
+llegar a esta sección, y se quedaba clavada ahí (medido: 19 px de avance con snap,
+385 sin él). Al ser sólo una animación, el dedo pasa de largo. **No volver a poner
+scroll horizontal ni drag en este carril.**
 
 ## Otras notas
 - `SplitText` guarda el texto real en un `sr-only` y marca las letras animadas como

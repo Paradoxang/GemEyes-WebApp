@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useState } from 'react'
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import { ArrowUpRight } from 'lucide-react'
 import { Counter, Glitch, Magnetic, Reveal, SplitText, Tilt } from './motion-kit'
@@ -148,12 +148,15 @@ export function Studio() {
 
 /* ========================================================================== */
 
-const SHOWCASE = ['c', 'spark', 'r', 'b100', 'idle', 'tl', 'b']
+// Los catorce, en un orden que recorre el anillo de miradas y va intercalando los
+// estados especiales, para que la cinta no parezca una lista ordenada.
+const SHOWCASE = [
+  'c', 'tl', 't', 'tr', 'spark', 'r', 'br', 'b', 'b100', 'bl', 'l', 'b70', 'idle', 'b30',
+]
 
 export function Gallery() {
-  const railRef = useRef(null)
   const reduced = useReducedMotion()
-  const pointerFine = usePointerFine()
+  const [paused, setPaused] = useState(false)
 
   return (
     <section id="galeria" className="relative overflow-hidden py-24 md:py-32">
@@ -177,87 +180,77 @@ export function Gallery() {
         <Reveal delay={0.1}>
           <p className="m-0 max-w-[56ch] text-[17px] text-blush">
             Todos comparten el mismo encuadre, así que basta con cambiar cuál está
-            visible para que el retrato cobre vida. Arrastra en horizontal.
+            visible para que el retrato cobre vida. Aquí van los catorce, en bucle.
           </p>
         </Reveal>
       </div>
 
-      {/* En táctil este carril NO puede ser un motion.div con props de drag.
-          Aunque se pase `drag={false}`, la sola presencia de dragConstraints y
-          compañía monta el reconocedor de gestos de Framer, que se tragaba el
-          swipe vertical en cuanto el dedo empezaba encima de una figura: la
-          página dejaba de bajar justo al llegar a la galería. Con cursor sí
-          interesa el arrastre, porque el scroll horizontal nativo con rueda es
-          incómodo. */}
-      <Rail
-        railRef={railRef}
-        draggable={pointerFine && !reduced}
-        className="gm-noscrollbar mt-12 flex gap-5 overflow-x-auto px-5 pt-1 pb-6 sm:px-14 lg:cursor-grab lg:active:cursor-grabbing"
-      >
-        {SHOWCASE.map((key, i) => (
-          <motion.figure
-            key={key}
-            initial={reduced ? false : { opacity: 0, y: 30 }}
-            whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.55, delay: (i % 4) * 0.08 }}
-            className="m-0 w-[min(470px,78vw)] flex-none"
-          >
-            <div className="relative overflow-hidden rounded-[12px] border border-edge shadow-[0_0_40px_rgba(251,111,146,.14)] transition-colors duration-300 hover:border-pink/60">
-              <img
-                src={FRAMES[key].src}
-                srcSet={FRAMES[key].webp}
-                sizes="470px"
-                alt={FRAMES[key].label}
-                width={2400}
-                height={1018}
-                loading="lazy"
-                draggable="false"
-                className="block h-[212px] w-full object-cover"
-                style={{ objectPosition: '50% 46%' }}
-              />
-            </div>
-            <figcaption className="mt-3 font-mono text-[11px] tracking-[0.25em] text-blush uppercase">
-              {String(i + 1).padStart(2, '0')} · {FRAMES[key].short}
-            </figcaption>
-          </motion.figure>
-        ))}
-      </Rail>
-    </section>
-  )
-}
+      {/* Cinta en rotación continua. La pista lleva los catorce frames dos veces
+          y se desplaza el 50% de su ancho, así que al terminar el ciclo la copia
+          queda exactamente donde estaba la original y el salto no se ve.
 
-/**
- * Carril de la galería.
- *
- * Sin `scroll-snap-type`: era lo que bloqueaba el scroll vertical de la página.
- * Al empezar el gesto dentro de un contenedor con snap horizontal, Chrome ancla
- * el desplazamiento a ese eje y se come el movimiento vertical, así que al llegar
- * a la galería la página dejaba de bajar. Medido: 19 px de avance con snap, 385
- * sin él. El scroll horizontal nativo sigue funcionando igual.
- *
- * El arrastre de Framer sólo se monta con cursor, donde el scroll horizontal con
- * rueda es incómodo.
- */
-function Rail({ railRef, draggable, className, children }) {
-  if (!draggable) {
-    return (
-      <div ref={railRef} className={className}>
-        {children}
+          Nada de scroll horizontal ni de `drag` de Framer aquí: ambos se comían
+          el swipe vertical de la página al llegar a esta sección. Al ser sólo
+          una animación, el dedo pasa de largo y la página sigue bajando. */}
+      <div
+        className="gm-noscrollbar relative mt-12 flex overflow-hidden py-1"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        <div
+          className="flex w-max gap-5 pr-5"
+          style={
+            reduced
+              ? undefined
+              : {
+                  animation: 'gmMarquee 58s linear infinite',
+                  animationPlayState: paused ? 'paused' : 'running',
+                }
+          }
+        >
+          {[0, 1].map((copia) =>
+            SHOWCASE.map((key, i) => (
+              <figure
+                key={`${copia}-${key}`}
+                className="m-0 w-[min(420px,72vw)] flex-none"
+                aria-hidden={copia === 1 || undefined}
+              >
+                <div className="relative overflow-hidden rounded-[12px] border border-edge shadow-[0_0_40px_rgba(251,111,146,.14)] transition-colors duration-300 hover:border-pink/60">
+                  <img
+                    src={FRAMES[key].src}
+                    srcSet={FRAMES[key].webp}
+                    sizes="420px"
+                    alt={copia === 0 ? FRAMES[key].label : ''}
+                    width={2400}
+                    height={1018}
+                    loading="lazy"
+                    draggable="false"
+                    className="block h-[196px] w-full object-cover"
+                    style={{ objectPosition: '50% 46%' }}
+                  />
+                </div>
+                <figcaption className="mt-3 text-[11px] tracking-[0.25em] text-blush uppercase">
+                  {String(i + 1).padStart(2, '0')} · {FRAMES[key].short}
+                </figcaption>
+              </figure>
+            )),
+          )}
+        </div>
+
+        {/* Difuminado en los extremos para que las piezas entren y salgan sin
+            cortarse de golpe contra el borde. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-28"
+          style={{ background: 'linear-gradient(90deg,#1C0412,rgba(28,4,18,0))' }}
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-28"
+          style={{ background: 'linear-gradient(270deg,#1C0412,rgba(28,4,18,0))' }}
+        />
       </div>
-    )
-  }
-  return (
-    <motion.div
-      ref={railRef}
-      drag="x"
-      dragConstraints={{ left: -1400, right: 0 }}
-      dragElastic={0.08}
-      dragMomentum
-      className={className}
-    >
-      {children}
-    </motion.div>
+    </section>
   )
 }
 
