@@ -3,7 +3,8 @@ import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import { ArrowUpRight } from 'lucide-react'
 import { Counter, Glitch, Magnetic, Reveal, SplitText, Tilt } from './motion-kit'
 import SparkleField from './SparkleField'
-import { useLiteMode, usePointerFine } from '../lib/useDevice'
+import PostIts from './PostIts'
+import { usePointerFine } from '../lib/useDevice'
 import { FRAMES } from '../frames'
 
 const SPARK_PATH =
@@ -139,24 +140,7 @@ export function Studio() {
           </Reveal>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {SERVICES.map((service, i) => (
-            <Reveal key={service.n} delay={i * 0.09}>
-              <Tilt>
-                <div className="group relative rounded-[14px] border border-edge bg-[linear-gradient(160deg,rgba(59,11,32,.82),rgba(28,4,18,.55))] px-8 pt-9 pb-10 shadow-[inset_0_0_46px_rgba(110,19,57,.5),0_0_34px_rgba(251,111,146,.06)] transition-all duration-300 hover:border-pink/60 hover:shadow-[inset_0_0_46px_rgba(110,19,57,.5),0_0_46px_rgba(251,111,146,.22)]">
-                  <Corners />
-                  <span className="font-mono text-[11px] tracking-[0.25em] text-butter">
-                    {service.n}
-                  </span>
-                  <h3 className="mt-5 mb-3 font-display text-[21px] leading-[1.05] text-chalk uppercase">
-                    {service.title}
-                  </h3>
-                  <p className="m-0 text-[15px] text-blush">{service.body}</p>
-                </div>
-              </Tilt>
-            </Reveal>
-          ))}
-        </div>
+        <PostIts />
       </div>
     </section>
   )

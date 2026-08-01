@@ -4,7 +4,7 @@ import Portrait from './Portrait'
 import Particles from './Particles'
 import { SplitText } from './motion-kit'
 import { useGazeEngine } from '../lib/useGazeEngine'
-import { useIsMobile, useLiteMode, usePointerFine } from '../lib/useDevice'
+import { useIsMobile, useIsPortrait, useLiteMode, usePointerFine } from '../lib/useDevice'
 import { ASPECT_MOBILE } from '../frames'
 
 export default function Hero() {
@@ -13,6 +13,7 @@ export default function Hero() {
   const reduced = useReducedMotion()
   const pointerFine = usePointerFine()
   const isMobile = useIsMobile()
+  const isPortrait = useIsPortrait()
   const lite = useLiteMode()
 
   const { frame, triggerSpark, leanX, leanY } = useGazeEngine(stageRef, {
@@ -58,11 +59,13 @@ export default function Hero() {
     </motion.h1>
   )
 
-  /* ------------------------------------------------------------------ MÓVIL */
-  // El arte es apaisado 2.36:1. Recortado al 70% sube a 1.65:1, que a ancho
-  // completo ocupa bastante más alto sin perder ninguno de los dos ojos. Va en
-  // el flujo, a sangre de lado a lado, y el texto debajo.
-  if (isMobile) {
+  // Pantalla vertical (móvil y tablet de pie) y escritorio comparten estructura:
+  // el retrato ocupa toda la pantalla y el texto va encima. Sólo cambia el
+  // encuadre de las imágenes. La banda apaisada queda para el caso raro de una
+  // ventana estrecha y achatada, como un móvil girado.
+  const fullBleed = isPortrait || !isMobile
+
+  if (!fullBleed) {
     return (
       <section
         id="top"
@@ -84,8 +87,6 @@ export default function Hero() {
             className="w-full"
             style={{ aspectRatio: ASPECT_MOBILE }}
           />
-          {/* Fundido sólo en los bordes superior e inferior de la banda, para
-              que no quede un corte duro contra el fondo. */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0"
@@ -104,7 +105,6 @@ export default function Hero() {
     )
   }
 
-  /* ------------------------------------------------------------- ESCRITORIO */
   return (
     <section
       id="top"
@@ -116,11 +116,19 @@ export default function Hero() {
         ref={stageRef}
         onClick={triggerSpark}
         className="absolute -inset-[2%] z-0 cursor-pointer bg-void"
-        style={reduced ? undefined : { x: shiftX, y: shiftY, scale: stageScale }}
+        style={reduced || isPortrait ? undefined : { x: shiftX, y: shiftY, scale: stageScale }}
         data-hot
       >
-        <motion.div className="h-full w-full" style={reduced ? undefined : { y: stageY }}>
-          <Portrait frame={frame} spark={frame.key === 'spark'} className="h-full w-full" />
+        <motion.div
+          className="h-full w-full"
+          style={reduced || lite ? undefined : { y: stageY }}
+        >
+          <Portrait
+            frame={frame}
+            portrait={isPortrait}
+            spark={frame.key === 'spark'}
+            className="h-full w-full"
+          />
         </motion.div>
       </motion.div>
 
@@ -138,8 +146,9 @@ export default function Hero() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-[1]"
         style={{
-          background:
-            'radial-gradient(52% 26% at 50% 84%,rgba(28,4,18,.62) 0%,rgba(28,4,18,.3) 55%,rgba(28,4,18,0) 100%)',
+          background: isPortrait
+            ? 'radial-gradient(78% 24% at 50% 88%,rgba(28,4,18,.8) 0%,rgba(28,4,18,.42) 55%,rgba(28,4,18,0) 100%)'
+            : 'radial-gradient(52% 26% at 50% 84%,rgba(28,4,18,.62) 0%,rgba(28,4,18,.3) 55%,rgba(28,4,18,0) 100%)',
         }}
       />
 
@@ -151,19 +160,21 @@ export default function Hero() {
       >
         {kicker}
         <div className="relative mt-4 flex w-full justify-center">
-          <motion.div
-            aria-hidden="true"
-            className="absolute top-1/2 left-1/2 h-[62%] w-[42%]"
-            initial={reduced ? false : { opacity: 0, scaleX: 0.4 }}
-            animate={{ opacity: 1, scaleX: 1 }}
-            transition={{ duration: 1.1, ease: [0.2, 0.8, 0.2, 1], delay: 0.35 }}
-            style={{
-              transform: 'translate(-50%,-50%) rotate(-6deg)',
-              background:
-                'linear-gradient(90deg,rgba(251,111,146,0) 0%,rgba(251,111,146,.42) 26%,rgba(224,30,55,.36) 64%,rgba(251,111,146,0) 100%)',
-              filter: 'blur(16px)',
-            }}
-          />
+          {!isPortrait && (
+            <motion.div
+              aria-hidden="true"
+              className="absolute top-1/2 left-1/2 h-[62%] w-[42%]"
+              initial={reduced ? false : { opacity: 0, scaleX: 0.4 }}
+              animate={{ opacity: 1, scaleX: 1 }}
+              transition={{ duration: 1.1, ease: [0.2, 0.8, 0.2, 1], delay: 0.35 }}
+              style={{
+                transform: 'translate(-50%,-50%) rotate(-6deg)',
+                background:
+                  'linear-gradient(90deg,rgba(251,111,146,0) 0%,rgba(251,111,146,.42) 26%,rgba(224,30,55,.36) 64%,rgba(251,111,146,0) 100%)',
+                filter: 'blur(16px)',
+              }}
+            />
+          )}
           {title}
         </div>
       </motion.div>

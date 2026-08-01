@@ -19,9 +19,18 @@ export function usePointerFine() {
   return useMedia('(hover: hover) and (pointer: fine)')
 }
 
-/** true por debajo del punto donde el retrato pasa al recorte vertical. */
+/** true en ventanas estrechas, donde el retrato usa el recorte apaisado corto. */
 export function useIsMobile() {
   return useMedia('(max-width: 860px)')
+}
+
+/**
+ * true cuando la pantalla es claramente más alta que ancha: móviles y tablets en
+ * vertical. Ahí el hero usa el recorte de un ojo, que es el único que llena la
+ * pantalla entera.
+ */
+export function useIsPortrait() {
+  return useMedia('(max-aspect-ratio: 9/10) and (max-width: 1180px)')
 }
 
 /**

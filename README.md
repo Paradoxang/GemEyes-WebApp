@@ -153,16 +153,28 @@ los WebP, pídeselos a quien tenga el arte fuente.
 
 ## Móvil
 
-**Set de imágenes propio.** El arte es 2.36:1. Recortado al 70 % del ancho sube a
-1.65:1 conservando los dos ojos con margen, lo que en un teléfono son un 43 % más
-de altura ocupada. Son los archivos `*-m480/800/1200.webp`, y el hero móvil los
-muestra a sangre de lado a lado en su relación natural.
+Hay **tres encuadres** del mismo arte, y el hero elige según la forma de la pantalla:
 
-**No se puede llenar la pantalla entera con los dos ojos.** Los ojos ocupan el 62 %
-del ancho del arte; para llenar un móvil vertical (0.46:1) habría que recortar a
-menos de la mitad, y uno de los dos se queda fuera. La única forma de conseguir un
-hero a pantalla completa en móvil sería usar **un solo ojo** (un recorte de ~0.46:1
-centrado en uno de ellos, que sí llena y queda espectacular). Está sin implementar.
+| Encuadre | Archivos | Aspecto | Cuándo |
+|---|---|---|---|
+| Completo | `*-800…2400.webp` | 2.36:1 | Escritorio y ventanas apaisadas |
+| Corto | `*-m480…1200.webp` | 1.65:1 | Ventanas estrechas y achatadas (móvil girado) |
+| Vertical | `*-p560…1600.webp` | 0.55:1 | Móvil y tablet de pie |
+
+**El encuadre vertical es de un solo ojo, y es la única forma de llenar la
+pantalla.** Los dos ojos juntos ocupan el 62 % del ancho del arte: para llenar un
+móvil vertical (0.46:1) habría que recortar a menos de la mitad de eso y uno se
+queda fuera. Es geometría del arte, no una limitación del código.
+
+La posición del ojo **no está estimada a ojo**: se mide detectando el contorno
+oscuro del párpado por columnas. El ojo izquierdo va de 0.195 a 0.414 del ancho,
+centro en **0.3045**. Ese es el `CENTRO_X` del recorte. Un primer intento centrado
+en 0.318 dejaba la gema cortada por la izquierda.
+
+Ojo con el `cover`: sobre una pantalla más estrecha que el recorte, recorta otro
+tanto por los lados. Con recorte a 0.62 y un móvil a 0.46 se perdía un 12 % por
+lado y se comía el borde del ojo; por eso el recorte final es **0.55**, más cerca
+de la forma del teléfono.
 
 **Rendimiento — modo ligero** (`src/lib/useDevice.js`). Se activa con puntero
 grueso, pocos núcleos o `prefers-reduced-motion`, y recorta lo que no aporta:
@@ -176,6 +188,23 @@ grueso, pocos núcleos o `prefers-reduced-motion`, y recorta lo que no aporta:
 
 Medido con la CPU 6× ralentizada: **18 → 24 FPS**, animaciones CSS simultáneas
 99 → 33, nodos 739 → 497, imágenes 51 → 32.
+
+## Los post-its — `src/components/PostIts.jsx`
+
+Notas de papel clavadas con chincheta y unidas por un hilo de puntos. Dos detalles
+que costaron un par de vueltas:
+
+- **El hilo va por encima de las tarjetas 2 y 3**, no por los huecos entre
+  columnas. El hueco de la retícula son 32 px y la línea quedaba tapada; el
+  desnivel entre notas (0 / 104 / 28 px) deja una franja despejada arriba por la
+  que sí se ve.
+- **No usar `pathLength` de Framer para dibujarla.** Lo implementa con el propio
+  `strokeDasharray`, así que pisa el punteado y la deja continua. Se anima
+  `strokeDashoffset` en su lugar, que además hace que los puntos se enhebren.
+- **`vectorEffect="non-scaling-stroke"` es obligatorio.** El `viewBox` va estirado
+  con `preserveAspectRatio="none"` para poder colocar el trazado en porcentajes, y
+  eso deforma también el patrón de guiones: sin ese atributo salen cuatro rayas
+  largas en vez de una línea de puntos.
 
 **El carril de la galería no lleva `scroll-snap`.** Al empezar un gesto dentro de un
 contenedor con snap horizontal, Chrome ancla el desplazamiento a ese eje y se come

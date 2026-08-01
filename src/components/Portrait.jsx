@@ -11,6 +11,9 @@ import { FRAMES, FRAME_KEYS, GLINTS, GRID } from '../frames'
  */
 const SIZES_COVER = '245vh'
 const SIZES_MOBILE = '100vw'
+// Recorte vertical con `cover`: en pantallas más estrechas que 0.55 la imagen se
+// escala por altura y hace falta 55vh de ancho; en las más anchas manda el ancho.
+const SIZES_PORTRAIT = '(max-aspect-ratio: 55/100) 55vh, 100vw'
 
 /**
  * Los 14 frames apilados. La opacidad se maneja a mano y no con Framer porque el
@@ -26,6 +29,7 @@ const SIZES_MOBILE = '100vw'
 export default function Portrait({
   frame,
   mobile = false,
+  portrait = false,
   spark = false,
   className = '',
   style,
@@ -70,9 +74,17 @@ export default function Portrait({
   if (GRID[key]) lastGaze.current = GRID[key]
   const [gx, gy] = lastGaze.current
 
-  const sizes = mobile ? SIZES_MOBILE : SIZES_COVER
+  const sizes = portrait ? SIZES_PORTRAIT : mobile ? SIZES_MOBILE : SIZES_COVER
+  // En vertical el recorte ya tiene la forma de la pantalla, así que `cover`
+  // llena sin dejar bandas y recorta poquísimo.
   const objectFit = mobile ? 'fill' : 'cover'
-  const objectPosition = mobile ? '50% 50%' : '50% 44%'
+  const objectPosition = portrait ? '50% 50%' : mobile ? '50% 50%' : '50% 44%'
+  const pick = (f) =>
+    portrait
+      ? { src: f.srcPortrait, srcSet: f.portrait }
+      : mobile
+        ? { src: f.srcMobile, srcSet: f.mobile }
+        : { src: f.src, srcSet: f.webp }
 
   return (
     <div
@@ -92,8 +104,7 @@ export default function Portrait({
           style={{ opacity: k === 'c' ? 1 : 0, zIndex: k === 'c' ? 2 : 0 }}
         >
           <img
-            src={mobile ? FRAMES[k].srcMobile : FRAMES[k].src}
-            srcSet={mobile ? FRAMES[k].mobile : FRAMES[k].webp}
+            {...pick(FRAMES[k])}
             sizes={sizes}
             alt=""
             decoding={k === 'c' ? 'sync' : 'async'}
@@ -106,8 +117,7 @@ export default function Portrait({
       ))}
 
       <motion.img
-        src={mobile ? GLINTS.srcMobile : GLINTS.src}
-        srcSet={mobile ? GLINTS.mobile : GLINTS.webp}
+        {...pick(GLINTS)}
         sizes={sizes}
         alt=""
         aria-hidden="true"
