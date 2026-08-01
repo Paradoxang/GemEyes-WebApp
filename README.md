@@ -175,6 +175,17 @@ va de 0.195 a 0.414 del ancho (centro **0.3045**, medido detectando el contorno 
 párpado por columnas, no a ojo), y hay que recordar que `cover` sobre una pantalla
 más estrecha que el recorte se come otro tanto por los lados.
 
+**El tier más alto en táctil se corta en 800.** Los catorce frames viven apilados y
+todos rasterizados a la vez: con el tier de 1200 a densidad 3× son unos **57 MB de
+textura** en la GPU de un móvil, y esa presión hace que el compositor desaloje y
+vuelva a rasterizar, que se ve como tirones intermitentes. Con el tope en 800 baja
+a ~25 MB. A 437 px de ancho el 800 sigue dando 1,8× de densidad, así que en una
+ilustración de acuarela no se nota. Es el `mobileLight` de `frames.js`.
+
+Se descartó la alternativa de ocultar los frames inactivos con `visibility:hidden`
+(bajaría a ~3 texturas): obliga a rasterizar al vuelo en el momento del cambio y
+podía meter un retraso en la mirada imposible de comprobar sin el dispositivo real.
+
 **Rendimiento — modo ligero** (`src/lib/useDevice.js`). Se activa con puntero
 grueso, pocos núcleos o `prefers-reduced-motion`, y recorta lo que no aporta:
 
@@ -212,9 +223,13 @@ Tres cosas añadidas por el camino:
 
 - **Se pausa fuera de pantalla.** El shader corre a pantalla completa; con
   `useInView` el bucle se detiene y el contexto se libera mientras la sección no se
-  ve, que es la mayor parte de la página. También se apaga entero en modo ligero.
-- **El lienzo se limita a 1.5× de densidad.** Pintar un shader a resolución retina
-  completa no se nota aquí y cuesta bastante.
+  ve, que es la mayor parte de la página.
+- **Sólo se descarta con `prefers-reduced-motion`.** Colgarlo del modo ligero fue un
+  error: ese modo se enciende con cualquier puntero táctil, así que en móvil el
+  degradado no llegaba a cargarse nunca y siempre se veía el respaldo CSS.
+- **El lienzo se limita a 1.5× de densidad, y a 1× en táctil.** Pintar un shader a
+  resolución retina completa no se nota aquí y cuesta bastante; el 1× es lo que hace
+  viable dejarlo encendido en el móvil.
 - **Hace falta un velo entre el degradado y el texto.** Sin él, el párrafo cae
   sobre las zonas rosas claras del shader y se vuelve ilegible. Va en `z-0` como el
   degradado pero después en el DOM, así que lo tapa a él y no al contenido.

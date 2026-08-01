@@ -332,10 +332,16 @@ const GRADIENT_FALLBACK =
 
 export function Closing() {
   const ref = useRef(null)
-  const lite = useLiteMode()
+  const reduced = useReducedMotion()
   // El shader corre a pantalla completa: sólo mientras la sección se ve. Fuera de
-  // pantalla el bucle se detiene, que es la mitad de la página.
+  // pantalla el bucle se detiene, que es la mayor parte de la página.
   const enPantalla = useInView(ref, { amount: 0.15 })
+
+  // Antes esto colgaba del modo ligero, que se enciende con cualquier puntero
+  // táctil: en móvil el degradado no llegaba a cargarse nunca y siempre se veía
+  // el respaldo CSS. Ahora sólo se descarta con `prefers-reduced-motion`; el
+  // coste en táctil se controla bajando la densidad del lienzo.
+  const pausado = reduced || !enPantalla
 
   return (
     <section
@@ -347,7 +353,7 @@ export function Closing() {
       <AnimatedGradient
         config={GRADIENT}
         noise={{ opacity: 0.35, scale: 1 }}
-        paused={lite || !enPantalla}
+        paused={pausado}
         fallbackBackground={GRADIENT_FALLBACK}
         className="z-0"
       />

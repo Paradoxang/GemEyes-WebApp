@@ -14,12 +14,23 @@ const srcset = (slug) => WIDTHS.map((w) => `${BASE}/${slug}-${w}.webp ${w}w`).jo
 const srcsetMobile = (slug) =>
   MOBILE_WIDTHS.map((w) => `${BASE}/${slug}-m${w}.webp ${w}w`).join(', ')
 
+// Variante recortada para táctil. Los catorce frames viven apilados y todos
+// rasterizados a la vez: con el tier de 1200 a densidad 3x eso son ~57 MB de
+// textura en la GPU de un móvil, y esa presión hace que el compositor desaloje y
+// vuelva a rasterizar, que se ve como tirones. Limitando el tier más alto a 800 la
+// memoria baja a ~25 MB. A 437 px de ancho el 800 sigue dando 1,8x de densidad,
+// así que en una ilustración de acuarela no se nota.
+const MOBILE_WIDTHS_LIGHT = [480, 800]
+const srcsetMobileLight = (slug) =>
+  MOBILE_WIDTHS_LIGHT.map((w) => `${BASE}/${slug}-m${w}.webp ${w}w`).join(', ')
+
 const frame = (slug, label, short) => ({
   slug,
   label,
   short: short ?? label,
   webp: srcset(slug),
   mobile: srcsetMobile(slug),
+  mobileLight: srcsetMobileLight(slug),
   src: `${BASE}/${slug}-1584.webp`,
   srcMobile: `${BASE}/${slug}-m800.webp`,
 })
@@ -59,6 +70,7 @@ export const FRAME_KEYS = Object.keys(FRAMES)
 export const GLINTS = {
   webp: [800, 1584, 2400].map((w) => `${BASE}/glints-${w}.webp ${w}w`).join(', '),
   mobile: MOBILE_WIDTHS.map((w) => `${BASE}/glints-m${w}.webp ${w}w`).join(', '),
+  mobileLight: MOBILE_WIDTHS_LIGHT.map((w) => `${BASE}/glints-m${w}.webp ${w}w`).join(', '),
   src: `${BASE}/glints-1584.webp`,
   srcMobile: `${BASE}/glints-m800.webp`,
 }

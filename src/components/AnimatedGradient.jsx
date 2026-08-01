@@ -131,12 +131,15 @@ export default function AnimatedGradient({
         ].map((name) => [name, gl.getUniformLocation(program, name)]),
       )
 
-      // El lienzo se limita a 1.5x para no pintar un shader a resolución de
-      // pantalla retina completa: en esta sección no se nota y ahorra bastante.
+      // El lienzo se limita a 1.5x para no pintar un shader a resolución retina
+      // completa: en esta sección no se nota y ahorra bastante. En táctil se baja
+      // a 1x, que es lo que hace viable dejarlo encendido en el móvil.
+      const coarse = window.matchMedia('(pointer: coarse)').matches
+      const maxRatio = coarse ? 1 : 1.5
       const resize = () => {
         const width = container.clientWidth
         const height = container.clientHeight
-        const ratio = Math.min(window.devicePixelRatio || 1, 1.5)
+        const ratio = Math.min(window.devicePixelRatio || 1, maxRatio)
         canvas.width = Math.max(1, Math.round(width * ratio))
         canvas.height = Math.max(1, Math.round(height * ratio))
         canvas.style.width = `${width}px`
@@ -161,7 +164,7 @@ export default function AnimatedGradient({
 
         gl.uniform1f(u.u_time, elapsed * speed + params.offset * 0.01)
         gl.uniform2f(u.u_resolution, canvas.width, canvas.height)
-        gl.uniform1f(u.u_pixelRatio, Math.min(window.devicePixelRatio || 1, 1.5))
+        gl.uniform1f(u.u_pixelRatio, Math.min(window.devicePixelRatio || 1, maxRatio))
         gl.uniform1f(u.u_scale, params.scale)
         gl.uniform1f(u.u_rotation, (params.rotation * Math.PI) / 180)
         gl.uniform4f(u.u_color1, c1[0], c1[1], c1[2], c1[3])

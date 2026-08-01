@@ -80,6 +80,7 @@ export default function Hero() {
           <Portrait
             frame={frame}
             mobile
+            lightTextures
             spark={frame.key === 'spark'}
             className="w-full"
             style={{ aspectRatio: ASPECT_MOBILE }}

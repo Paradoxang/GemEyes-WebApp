@@ -28,6 +28,7 @@ const SIZES_MOBILE = '112vw'
 export default function Portrait({
   frame,
   mobile = false,
+  lightTextures = false,
   spark = false,
   className = '',
   style,
@@ -76,7 +77,9 @@ export default function Portrait({
   const objectFit = mobile ? 'fill' : 'cover'
   const objectPosition = mobile ? '50% 50%' : '50% 44%'
   const pick = (f) =>
-    mobile ? { src: f.srcMobile, srcSet: f.mobile } : { src: f.src, srcSet: f.webp }
+    mobile
+      ? { src: f.srcMobile, srcSet: lightTextures ? f.mobileLight : f.mobile }
+      : { src: f.src, srcSet: f.webp }
 
   return (
     <div
