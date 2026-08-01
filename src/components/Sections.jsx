@@ -1,10 +1,12 @@
-import { useState } from 'react'
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { useRef, useState } from 'react'
+import { motion, useInView, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import { ArrowUpRight } from 'lucide-react'
 import { Counter, Glitch, Magnetic, Reveal, SplitText, Tilt } from './motion-kit'
 import SparkleField from './SparkleField'
 import PostIts from './PostIts'
-import { usePointerFine } from '../lib/useDevice'
+import ProcessAccordion from './ProcessAccordion'
+import AnimatedGradient from './AnimatedGradient'
+import { useLiteMode, usePointerFine } from '../lib/useDevice'
 import { FRAMES } from '../frames'
 
 const SPARK_PATH =
@@ -270,7 +272,15 @@ export function Stats() {
       <Reveal>
         <Kicker>03 — Proceso</Kicker>
       </Reveal>
-      <div className="mt-11 grid grid-cols-2 border-t border-edge md:grid-cols-4">
+      <Reveal delay={0.06}>
+        <h2 className="m-0 mt-4 max-w-[16ch] font-display text-[clamp(28px,4vw,58px)] leading-[0.98] text-chalk uppercase">
+          Como trabajamos
+        </h2>
+      </Reveal>
+
+      <ProcessAccordion />
+
+      <div className="mt-16 grid grid-cols-2 border-t border-edge md:grid-cols-4">
         {STATS.map((stat, i) => (
           <Reveal
             key={stat.label}
@@ -298,17 +308,63 @@ export function Stats() {
 
 /* ========================================================================== */
 
+// Preset del degradado animado con la paleta Gem Eyes: base cereza casi negra,
+// violeta de los paneles y el rosa principal como color vivo.
+const GRADIENT = {
+  color1: '#1C0412',
+  color2: '#3B0B20',
+  color3: '#FB6F92',
+  rotation: -45,
+  proportion: 60,
+  scale: 0.6,
+  speed: 12,
+  distortion: 40,
+  swirl: 80,
+  swirlIterations: 10,
+  softness: 100,
+  offset: 200,
+  shape: 'Edge',
+  shapeSize: 50,
+}
+
+const GRADIENT_FALLBACK =
+  'radial-gradient(120% 80% at 50% 40%,rgba(74,12,36,.9) 0%,rgba(44,7,20,.88) 46%,rgba(28,4,18,.86) 100%)'
+
 export function Closing() {
+  const ref = useRef(null)
+  const lite = useLiteMode()
+  // El shader corre a pantalla completa: sólo mientras la sección se ve. Fuera de
+  // pantalla el bucle se detiene, que es la mitad de la página.
+  const enPantalla = useInView(ref, { amount: 0.15 })
+
   return (
     <section
       id="contacto"
+      ref={ref}
       className="relative flex min-h-[86svh] flex-col items-center justify-center gap-6 overflow-hidden border-t border-edge px-5 py-24 text-center sm:px-14 md:py-32"
-      style={{
-        // Semitransparente para que la capa de luz global se vea también aquí.
-        background:
-          'radial-gradient(120% 80% at 50% 40%,rgba(74,12,36,.9) 0%,rgba(44,7,20,.88) 46%,rgba(28,4,18,.86) 100%)',
-      }}
+      style={{ background: GRADIENT_FALLBACK }}
     >
+      <AnimatedGradient
+        config={GRADIENT}
+        noise={{ opacity: 0.35, scale: 1 }}
+        paused={lite || !enPantalla}
+        fallbackBackground={GRADIENT_FALLBACK}
+        className="z-0"
+      />
+
+      {/* Velo entre el degradado y el texto. Sin él, el párrafo cae sobre las
+          zonas rosas claras del shader y se vuelve ilegible. Va en z-0 como el
+          degradado y después en el DOM, así que lo tapa a él pero no al
+          contenido, que viene más abajo. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background:
+            'radial-gradient(75% 62% at 50% 50%,rgba(28,4,18,.82) 0%,rgba(28,4,18,.66) 55%,rgba(28,4,18,.5) 100%)',
+        }}
+      />
+
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute top-1/2 left-1/2 h-[760px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[26px]"

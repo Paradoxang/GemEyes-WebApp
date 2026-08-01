@@ -188,6 +188,39 @@ grueso, pocos núcleos o `prefers-reduced-motion`, y recorta lo que no aporta:
 Medido con la CPU 6× ralentizada: **18 → 24 FPS**, animaciones CSS simultáneas
 99 → 33, nodos 739 → 497, imágenes 51 → 32.
 
+## El acordeón del proceso — `src/components/ProcessAccordion.jsx`
+
+Índice numerado al estilo de la referencia: los títulos cerrados quedan apagados,
+el abierto se enciende y despliega su párrafo. Pulsar el abierto lo cierra, así se
+puede ver la lista entera de un vistazo.
+
+**El panel se queda siempre en el DOM** y sólo se le anima el alto. Si se desmonta
+al cerrar (con `AnimatePresence`), el `aria-controls` del botón apunta a un
+elemento que no existe, que es ARIA inválido.
+
+Los títulos evitan tildes y eñes: Starbim dibuja las acentuadas sin acento y la eñe
+sin virgulilla, así que "Diseñamos" saldría "DISENAMOS".
+
+## El degradado animado — `src/components/AnimatedGradient.jsx`
+
+Shader WebGL2 de fondo en la sección de contacto. Es una adaptación del componente
+original, que venía para **shadcn + TypeScript + Next.js**: se quitaron los tipos,
+el `"use client"`, el helper `cn` y el `WebGLErrorBoundary` externo (el respaldo va
+integrado). El shader es el mismo.
+
+Tres cosas añadidas por el camino:
+
+- **Se pausa fuera de pantalla.** El shader corre a pantalla completa; con
+  `useInView` el bucle se detiene y el contexto se libera mientras la sección no se
+  ve, que es la mayor parte de la página. También se apaga entero en modo ligero.
+- **El lienzo se limita a 1.5× de densidad.** Pintar un shader a resolución retina
+  completa no se nota aquí y cuesta bastante.
+- **Hace falta un velo entre el degradado y el texto.** Sin él, el párrafo cae
+  sobre las zonas rosas claras del shader y se vuelve ilegible. Va en `z-0` como el
+  degradado pero después en el DOM, así que lo tapa a él y no al contenido.
+
+Si WebGL2 falla, se pinta el degradado CSS que había antes en vez de dejar hueco.
+
 ## Los post-its — `src/components/PostIts.jsx`
 
 Notas de **cristal tintado** clavadas con chincheta y unidas por un hilo de puntos.
