@@ -1,10 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
 
-// Puerto distinto al del proyecto principal (5174) para poder tener las dos
-// versiones levantadas a la vez y compararlas lado a lado.
+// Sin Tailwind: la demo se estiliza con una hoja de CSS a mano.
+// Puerto distinto al del proyecto principal (5174) para tener las dos versiones
+// levantadas a la vez y compararlas lado a lado.
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react()],
   server: { port: 5175 },
 })

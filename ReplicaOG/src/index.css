@@ -1,191 +1,131 @@
-@import 'tailwindcss';
+/* Hoja de estilos de la demo. Sin framework, sin tipografías propias, sin
+   animaciones ni degradados: fuentes del sistema, fondo blanco y bordes grises.
+   Es el punto de partida crudo contra el que se compara la versión terminada. */
 
-/* Tipografías propias, servidas desde public/fonts.
-   Starbim: sólo caja alta, la "A" es una estrella y no lleva acentos.
-   Super Bouncer: display bouncy; se usa a cuerpo grande porque no es una tipo
-   de texto y a tamaños pequeños se lee con esfuerzo. */
-@font-face {
-  font-family: 'Starbim';
-  src: url('/fonts/Starbim.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+body {
+  margin: 0;
+  background: #ffffff;
+  color: #222222;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
 }
 
-@font-face {
-  font-family: 'Super Bouncer';
-  src: url('/fonts/SuperBouncer.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+h1,
+h2,
+h3 {
+  font-weight: bold;
+  margin: 0 0 8px;
 }
 
-/* Paleta Gumdrop / CherryPop: base cereza casi negra, rosas chicle y rojo cereza,
-   con mantequilla y menta como acentos para que no todo sea el mismo rosa. */
-@theme {
-  --color-void: #1c0412;
-  --color-void-deep: #12030a;
-  --color-panel: #3b0b20;
-  --color-edge: #6e1339;
-
-  --color-pink: #fb6f92;
-  --color-cherry: #e01e37;
-  --color-bubblegum: #ff8fab;
-  --color-gumdrop: #ffb3c6;
-  --color-butter: #ffe9a8;
-  --color-mint: #a9e5cb;
-
-  --color-chalk: #fff0f6;
-  --color-blush: #f3aec6;
-
-  --font-display: 'Starbim', ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Super Bouncer', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'Super Bouncer', ui-sans-serif, system-ui, sans-serif;
+h1 {
+  font-size: 30px;
+}
+h2 {
+  font-size: 22px;
+}
+h3 {
+  font-size: 16px;
 }
 
-@layer base {
-  html {
-    scroll-behavior: smooth;
-    background: var(--color-void);
-  }
-
-  body {
-    margin: 0;
-    background: var(--color-void);
-    color: var(--color-blush);
-    font-family: var(--font-sans);
-    line-height: 1.78;
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-  }
-
-  .font-display {
-    font-weight: 400;
-    letter-spacing: 0.005em;
-  }
-
-  a {
-    color: var(--color-chalk);
-    text-decoration: none;
-  }
-
-  ::selection {
-    background: var(--color-pink);
-    color: var(--color-void);
-  }
-
-  :focus-visible {
-    outline: 2px solid var(--color-butter);
-    outline-offset: 3px;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.001ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.001ms !important;
-    }
-  }
+p {
+  margin: 0 0 10px;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .cursor-none-fine,
-  .cursor-none-fine * {
-    cursor: none !important;
-  }
+a {
+  color: #0000ee;
 }
 
-@keyframes gmMarquee {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(-50%, 0, 0);
-  }
+hr {
+  border: 0;
+  border-top: 1px solid #cccccc;
+  margin: 24px 0;
 }
 
-@keyframes gmTwinkle {
-  0%,
-  100% {
-    opacity: 0.2;
-    transform: scale(0.8) rotate(0deg);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.2) rotate(45deg);
-  }
+.wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 16px;
 }
 
-@keyframes gmScrollDot {
-  0% {
-    transform: translateY(-8px);
-    opacity: 0;
-  }
-  40% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(14px);
-    opacity: 0;
-  }
+/* Cabecera */
+.topbar {
+  border-bottom: 1px solid #cccccc;
+  padding: 10px 16px;
+  background: #f2f2f2;
+}
+.topbar b {
+  margin-right: 20px;
+}
+.topbar a {
+  margin-right: 14px;
 }
 
-/* Latido lento para los destellos grandes repartidos por la página. */
-@keyframes gmBloom {
-  0%,
-  100% {
-    opacity: 0.18;
-    transform: scale(0.94) rotate(var(--gm-rot, 0deg));
-  }
-  50% {
-    opacity: 0.55;
-    transform: scale(1.08) rotate(var(--gm-rot, 0deg));
-  }
+/* Retrato */
+.retrato {
+  display: block;
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  border: 1px solid #999999;
+  background: #eeeeee;
+}
+.pie {
+  color: #666666;
+  font-size: 13px;
+  margin: 6px 0 0;
 }
 
-@keyframes gmGlitch {
-  0% {
-    text-shadow:
-      -4px 0 rgba(224, 30, 55, 0.9),
-      4px 0 rgba(255, 233, 168, 0.9);
-    transform: translate3d(-2px, 0, 0);
-  }
-  20% {
-    text-shadow:
-      5px 0 rgba(251, 111, 146, 0.9),
-      -5px 0 rgba(169, 229, 203, 0.9);
-    transform: translate3d(3px, 0, 0);
-  }
-  40% {
-    text-shadow:
-      -3px 0 rgba(224, 30, 55, 0.8),
-      3px 0 rgba(255, 233, 168, 0.8);
-    transform: translate3d(-1px, 0, 0);
-  }
-  70% {
-    text-shadow:
-      2px 0 rgba(251, 111, 146, 0.5),
-      -2px 0 rgba(255, 179, 198, 0.5);
-    transform: translate3d(1px, 0, 0);
-  }
-  100% {
-    text-shadow: 0 0 60px rgba(251, 111, 146, 0.5);
-    transform: translate3d(0, 0, 0);
-  }
+/* Servicios y proceso */
+.lista {
+  padding-left: 20px;
+}
+.lista li {
+  margin-bottom: 10px;
 }
 
-.gm-glitch {
-  animation: gmGlitch 620ms steps(2, end) 1 both;
+.tabla {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 520px;
+}
+.tabla th,
+.tabla td {
+  border: 1px solid #cccccc;
+  padding: 6px 10px;
+  text-align: left;
+}
+.tabla th {
+  background: #f2f2f2;
 }
 
-.gm-noscrollbar {
-  scrollbar-width: none;
+/* Galería */
+.galeria {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
-.gm-noscrollbar::-webkit-scrollbar {
-  display: none;
+.galeria li {
+  width: 200px;
+}
+.galeria img {
+  width: 100%;
+  height: auto;
+  border: 1px solid #999999;
+  display: block;
+}
+.galeria span {
+  font-size: 12px;
+  color: #666666;
+}
+
+footer {
+  border-top: 1px solid #cccccc;
+  margin-top: 32px;
+  padding: 16px;
+  color: #666666;
+  font-size: 13px;
 }
