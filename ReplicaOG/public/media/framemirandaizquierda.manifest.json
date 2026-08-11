@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-07-30T19:56:42.307Z",
+  "input": "FrameMirandaIzquierda.png",
+  "name": "framemirandaizquierda",
+  "outDir": "C:\\Users\\Santiago pc\\Proyectos\\ProyectoAnimated\\public\\media",
+  "quality": 74,
+  "type": "image",
+  "source": {
+    "width": 3168,
+    "height": 1344,
+    "hasAlpha": true
+  },
+  "aspectRatio": 2.3571,
+  "lqip": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAACwAwCdASoYAAoAPu1iqk2ppaQiMAgBMB2JZgCdMoABCsOLpCByoAD90O1A+evGdn8KhwnqovfxdCEjlcHFf3D9dIV7iWk+cWc95/7RMwAAAA==",
+  "widths": [
+    800,
+    1200,
+    1584
+  ],
+  "srcset": {
+    "avif": "framemirandaizquierda-800.avif 800w, framemirandaizquierda-1200.avif 1200w, framemirandaizquierda-1584.avif 1584w",
+    "webp": "framemirandaizquierda-800.webp 800w, framemirandaizquierda-1200.webp 1200w, framemirandaizquierda-1584.webp 1584w"
+  },
+  "fallback": "framemirandaizquierda-1584.png",
+  "outputs": [
+    {
+      "format": "avif",
+      "width": 800,
+      "file": "framemirandaizquierda-800.avif",
+      "kb": 22
+    },
+    {
+      "format": "webp",
+      "width": 800,
+      "file": "framemirandaizquierda-800.webp",
+      "kb": 25
+    },
+    {
+      "format": "avif",
+      "width": 1200,
+      "file": "framemirandaizquierda-1200.avif",
+      "kb": 32
+    },
+    {
+      "format": "webp",
+      "width": 1200,
+      "file": "framemirandaizquierda-1200.webp",
+      "kb": 40
+    },
+    {
+      "format": "avif",
+      "width": 1584,
+      "file": "framemirandaizquierda-1584.avif",
+      "kb": 42
+    },
+    {
+      "format": "webp",
+      "width": 1584,
+      "file": "framemirandaizquierda-1584.webp",
+      "kb": 56
+    },
+    {
+      "format": "png",
+      "width": 1584,
+      "file": "framemirandaizquierda-1584.png",
+      "kb": 2236,
+      "fallback": true
+    }
+  ]
+}

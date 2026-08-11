@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-07-30T19:56:32.686Z",
+  "input": "FrameDiagonalDerechoArriba.png",
+  "name": "framediagonalderechoarriba",
+  "outDir": "C:\\Users\\Santiago pc\\Proyectos\\ProyectoAnimated\\public\\media",
+  "quality": 74,
+  "type": "image",
+  "source": {
+    "width": 3172,
+    "height": 1344,
+    "hasAlpha": true
+  },
+  "aspectRatio": 2.3601,
+  "lqip": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAACwAwCdASoYAAoAPu1iqk2ppaQiMAgBMB2JZgCdMoAB39xEbyYr8AD8xC8+/HIIH49J0VfvfeHBaHf2AA92jAcW7dqV3Oxwl4BuNOF6QAA=",
+  "widths": [
+    800,
+    1200,
+    1584
+  ],
+  "srcset": {
+    "avif": "framediagonalderechoarriba-800.avif 800w, framediagonalderechoarriba-1200.avif 1200w, framediagonalderechoarriba-1584.avif 1584w",
+    "webp": "framediagonalderechoarriba-800.webp 800w, framediagonalderechoarriba-1200.webp 1200w, framediagonalderechoarriba-1584.webp 1584w"
+  },
+  "fallback": "framediagonalderechoarriba-1584.png",
+  "outputs": [
+    {
+      "format": "avif",
+      "width": 800,
+      "file": "framediagonalderechoarriba-800.avif",
+      "kb": 21
+    },
+    {
+      "format": "webp",
+      "width": 800,
+      "file": "framediagonalderechoarriba-800.webp",
+      "kb": 24
+    },
+    {
+      "format": "avif",
+      "width": 1200,
+      "file": "framediagonalderechoarriba-1200.avif",
+      "kb": 32
+    },
+    {
+      "format": "webp",
+      "width": 1200,
+      "file": "framediagonalderechoarriba-1200.webp",
+      "kb": 39
+    },
+    {
+      "format": "avif",
+      "width": 1584,
+      "file": "framediagonalderechoarriba-1584.avif",
+      "kb": 41
+    },
+    {
+      "format": "webp",
+      "width": 1584,
+      "file": "framediagonalderechoarriba-1584.webp",
+      "kb": 54
+    },
+    {
+      "format": "png",
+      "width": 1584,
+      "file": "framediagonalderechoarriba-1584.png",
+      "kb": 2341,
+      "fallback": true
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-07-30T19:56:26.002Z",
+  "input": "FrameCentral.png",
+  "name": "framecentral",
+  "outDir": "C:\\Users\\Santiago pc\\Proyectos\\ProyectoAnimated\\public\\media",
+  "quality": 74,
+  "type": "image",
+  "source": {
+    "width": 3168,
+    "height": 1344,
+    "hasAlpha": true
+  },
+  "aspectRatio": 2.3571,
+  "lqip": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADQAwCdASoYAAoAPu1kq04ppaQiMAgBMB2JZgCdMoABjNH68GrL7AAA/c22cUx/JgD8Xwe0Se7N+rgDRHRQsIShFG1lg6KZHTheMHVhAAA=",
+  "widths": [
+    800,
+    1200,
+    1584
+  ],
+  "srcset": {
+    "avif": "framecentral-800.avif 800w, framecentral-1200.avif 1200w, framecentral-1584.avif 1584w",
+    "webp": "framecentral-800.webp 800w, framecentral-1200.webp 1200w, framecentral-1584.webp 1584w"
+  },
+  "fallback": "framecentral-1584.png",
+  "outputs": [
+    {
+      "format": "avif",
+      "width": 800,
+      "file": "framecentral-800.avif",
+      "kb": 24
+    },
+    {
+      "format": "webp",
+      "width": 800,
+      "file": "framecentral-800.webp",
+      "kb": 28
+    },
+    {
+      "format": "avif",
+      "width": 1200,
+      "file": "framecentral-1200.avif",
+      "kb": 35
+    },
+    {
+      "format": "webp",
+      "width": 1200,
+      "file": "framecentral-1200.webp",
+      "kb": 44
+    },
+    {
+      "format": "avif",
+      "width": 1584,
+      "file": "framecentral-1584.avif",
+      "kb": 45
+    },
+    {
+      "format": "webp",
+      "width": 1584,
+      "file": "framecentral-1584.webp",
+      "kb": 60
+    },
+    {
+      "format": "png",
+      "width": 1584,
+      "file": "framecentral-1584.png",
+      "kb": 2375,
+      "fallback": true
+    }
+  ]
+}
